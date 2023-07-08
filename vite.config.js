@@ -15,6 +15,12 @@ const manifest = defineManifest({
     default_title: "Monthly debt hours",
     default_popup: "index.html",
   },
+  content_scripts: [
+    {
+      matches: ["<all_urls>"],
+      js: ["src/content.ts"],
+    },
+  ],
 });
 
 export default defineConfig({
