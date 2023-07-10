@@ -1,4 +1,5 @@
 import { crx, defineManifest } from "@crxjs/vite-plugin";
+import preact from "@preact/preset-vite";
 import { defineConfig } from "vite";
 import packageJson from "./package.json";
 
@@ -10,7 +11,7 @@ const manifest = defineManifest({
     16: "images/icon-16.svg",
     32: "images/icon-32.svg",
   },
-  permissions: ["activeTab"],
+  permissions: ["activeTab", "tabs"],
   action: {
     default_title: "Monthly debt hours",
     default_popup: "index.html",
@@ -24,5 +25,5 @@ const manifest = defineManifest({
 });
 
 export default defineConfig({
-  plugins: [crx({ manifest })],
+  plugins: [preact(), crx({ manifest })],
 });
