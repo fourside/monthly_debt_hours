@@ -1,14 +1,10 @@
 import "./style.css";
 
 import { Suspense, useState } from "react";
-import { WorkingStats } from "./content";
+import { getWorkingStats, type WorkingStats } from "./popup-client";
 import { subtractTime } from "./time";
 
-type Props = {
-  getWorkingStats: () => Promise<WorkingStats>;
-};
-
-export function App({ getWorkingStats }: Props) {
+export function App() {
   const [promiseWrapper] = useState(
     () => new PromiseWrapper(getWorkingStats())
   );

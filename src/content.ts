@@ -1,3 +1,4 @@
+import type { WorkingStats } from "./popup-client";
 import {
   addTime,
   normalizeTime,
@@ -17,21 +18,16 @@ function main(): void {
         (acc, cur) => addTime(acc, cur),
         { hour: 0, minute: 0 }
       );
-      sendResponse({
+      const response: WorkingStats = {
         actualTime: addTime(actualTime, sumMissPunchedTime),
         fixedTime,
         actualDays: actualDays + missPunched.length,
-      });
+      };
+      sendResponse(response);
     }
     return true;
   });
 }
-
-export type WorkingStats = {
-  actualDays: number; // 実働日数
-  fixedTime: Time; // 所定労働時間
-  actualTime: Time; // 実働時間
-};
 
 function actualWorkingTime(): Time {
   const workingTimeTable = getWorkingTimeTable();
