@@ -1,5 +1,5 @@
 import { crx, defineManifest } from "@crxjs/vite-plugin";
-import preact from "@preact/preset-vite";
+import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import packageJson from "./package.json";
 
@@ -25,5 +25,5 @@ const manifest = defineManifest({
 });
 
 export default defineConfig({
-  plugins: [preact(), crx({ manifest })],
+  plugins: [react(), crx({ manifest })],
 });

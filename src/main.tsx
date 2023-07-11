@@ -1,10 +1,12 @@
-import { render } from "preact";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { App } from "./app";
 import type { WorkingStats } from "./content";
 
-render(
-  <App getWorkingStats={() => asyncRetry(getWorkingStats)} />,
-  document.getElementById("app") as HTMLElement
+ReactDOM.createRoot(document.getElementById("app")!).render(
+  <React.StrictMode>
+    <App getWorkingStats={() => asyncRetry(getWorkingStats)} />
+  </React.StrictMode>
 );
 
 function getWorkingStats(): Promise<WorkingStats> {

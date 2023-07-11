@@ -1,6 +1,6 @@
 import "./style.css";
 
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState } from "react";
 import { WorkingStats } from "./content";
 import { subtractTime } from "./time";
 
