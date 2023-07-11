@@ -1,25 +1,33 @@
+import {
+  addTime,
+  normalizeTime,
+  parseTime,
+  subtractTime,
+  type Time,
+} from "./time";
+
 function main(): void {
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.type === "mount") {
       const actualTime = actualWorkingTime();
       const fixedTime = fixedWorkingTime();
-      sendResponse({ actualTime, fixedTime });
+      const actualDays = actualWorkingDays();
+      const missPunched = getMissPunchedTimes();
+      const sumMissPunchedTime = missPunched.reduce<Time>(
+        (acc, cur) => addTime(acc, cur),
+        { hour: 0, minute: 0 }
+      );
+      sendResponse({
+        actualTime: addTime(actualTime, sumMissPunchedTime),
+        fixedTime,
+        actualDays: actualDays + missPunched.length,
+      });
     }
-    // TODO: 所定労働日数
-    // TODO: 実働日数
-    // TODO: 打刻ミスのレコード取得
-    // TODO: 打刻ミスを上記結果に当て込み
     return true;
   });
 }
 
-type Time = {
-  hour: number;
-  minute: number;
-};
-
 export type WorkingStats = {
-  fixedDays: number; // 所定労働日数
   actualDays: number; // 実働日数
   fixedTime: Time; // 所定労働時間
   actualTime: Time; // 実働時間
@@ -32,11 +40,8 @@ function actualWorkingTime(): Time {
     "tr:nth-child(1) td",
     "実労働時間"
   );
-  const [hourStr, minuteStr] = textContent.split(":");
-  return normalizeTime({
-    hour: Number(hourStr),
-    minute: Number(minuteStr),
-  });
+  const time = parseTime(textContent);
+  return normalizeTime(time);
 }
 
 function fixedWorkingTime(): Time {
@@ -46,19 +51,60 @@ function fixedWorkingTime(): Time {
     "tr:nth-child(2) td",
     "月規定労働時間"
   );
-  const [hourStr, minuteStr] = textContent.split(":");
-  return {
-    hour: Number(hourStr),
-    minute: Number(minuteStr),
-  };
+  return parseTime(textContent);
+}
+
+function actualWorkingDays(): number {
+  const basisTable = getBasisTable();
+  const textContent = queryTextContent(
+    basisTable,
+    "tr:nth-child(1) td",
+    "実働日数"
+  );
+  return Number(textContent);
+}
+
+function getMissPunchedTimes(): Time[] {
+  const rows = getCalendarTable().querySelectorAll("tr:not(:nth-child(1))"); // 1行目はヘッダ
+  if (rows === null) {
+    throw new Error("rows cannot be gotten from calendar");
+  }
+  return Array.from(rows)
+    .filter((row) => queryTextContent(row, "td:nth-child(2)", "row") === "") // 公休などを除外
+    .map<[string, string]>((row) => [
+      queryTextContent(row, "td:nth-child(4)", "出勤時刻"),
+      queryTextContent(row, "td:nth-child(5)", "退勤時刻"),
+    ])
+    .filter(
+      ([start, end]) =>
+        (start == "" && end !== "") || (start !== "" && end === "")
+    ) // どちらかは空である
+    .map<Time>(([start, end]) => {
+      // 打刻されてない時間の補正
+      const startTime = parseTime(start === "" ? "10:30" : start);
+      const endTime = parseTime(end === "" ? "19:30" : end);
+      return subtractTime(endTime, startTime);
+    });
 }
 
 function getWorkingTimeTable(): HTMLTableElement {
   return document.querySelectorAll("table")[3];
 }
 
+function getBasisTable(): HTMLTableElement {
+  return document.querySelectorAll("table")[2];
+}
+
+function getCalendarTable(): HTMLTableElement {
+  const table = Array.from(document.querySelectorAll("table")).at(-1);
+  if (table === undefined) {
+    throw new Error("not get calendar table");
+  }
+  return table;
+}
+
 function queryTextContent(
-  element: HTMLElement,
+  element: Element,
   selector: string,
   label: string
 ): string {
@@ -67,13 +113,6 @@ function queryTextContent(
     throw new Error(`${label} not be there`);
   }
   return result;
-}
-
-function normalizeTime(time: Time): Time {
-  return {
-    hour: time.hour + Math.trunc(time.minute / 60),
-    minute: time.minute % 60,
-  };
 }
 
 main();

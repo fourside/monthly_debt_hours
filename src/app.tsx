@@ -8,10 +8,6 @@ type Props = {
 };
 
 export function App({ getWorkingStats }: Props) {
-  // TODO: 残り労働時間の算出... (fixedTime - actualTime)
-  // TODO: restDays = fixedDays - actualDays
-  // TODO: 平均何時間早上がり？... restTime - (restDays * 8h)
-  // MEMO: ▲はマイナス
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<WorkingStats>();
 
@@ -39,8 +35,9 @@ export function App({ getWorkingStats }: Props) {
         ) : (
           <>
             <div>
-              actual: {stats.actualTime.hour}:{stats.actualTime.minute}
+              actual time: {stats.actualTime.hour}:{stats.actualTime.minute}
             </div>
+            <div>actual days: {stats.actualDays}</div>
             <div>
               fixed: {stats.fixedTime.hour}:{stats.fixedTime.minute}
             </div>
@@ -51,13 +48,20 @@ export function App({ getWorkingStats }: Props) {
   );
 }
 
-async function asyncRetry<T>(callback: () => Promise<T>): Promise<T> {
+async function asyncRetry<T>(
+  callback: () => Promise<T>,
+  attempt = 0
+): Promise<T> {
   try {
     return await callback();
   } catch (error) {
     if (error instanceof Error) {
+      if (attempt >= 10) {
+        console.error("retry over 10 times.");
+        throw error;
+      }
       await delay();
-      return await asyncRetry(callback);
+      return await asyncRetry(callback, attempt++);
     }
     throw error;
   }
