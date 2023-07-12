@@ -2,7 +2,7 @@ import "./style.css";
 
 import { Suspense, useState } from "react";
 import { getWorkingStats, type WorkingStats } from "./popup-client";
-import { subtractTime } from "./time";
+import { averageTime, subtractTime } from "./time";
 
 export function App() {
   const [promiseWrapper] = useState(
@@ -20,9 +20,8 @@ function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
   const stats = wrapper.getData();
   const restTime = subtractTime(stats.fixedTime, stats.actualTime);
   const restDays = Math.trunc(stats.fixedTime.hour / 8) - stats.actualDays;
-  const restMin = restTime.hour * 60 + restTime.minute;
-  const averageHour = Math.trunc(restMin / restDays / 60);
-  const averageMin = Math.trunc(restMin / restDays) % 60;
+  const avgTime = averageTime(restTime, restDays);
+
   console.debug({ stats });
   return (
     <div>
@@ -30,7 +29,7 @@ function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
         rest: {restDays} day ({restTime.hour}:{restTime.minute})
       </div>
       <div>
-        average: {averageHour}:{averageMin}
+        average: {avgTime.hour}:{avgTime.minute}
       </div>
     </div>
   );

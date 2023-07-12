@@ -25,6 +25,16 @@ export function subtractTime(from: Time, to: Time): Time {
   });
 }
 
+export function averageTime(restTime: Time, restDays: number): Time {
+  const totalMin = restTime.hour * 60 + restTime.minute;
+  const averageMin = Math.trunc(totalMin / restDays);
+
+  return normalizeTime({
+    hour: Math.trunc(averageMin / 60),
+    minute: Math.trunc(averageMin % 60),
+  });
+}
+
 function normalizeTime(time: Time): Time {
   return {
     hour: time.hour + Math.trunc(time.minute / 60),
