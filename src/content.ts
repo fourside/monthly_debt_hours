@@ -58,16 +58,19 @@ function getMissPunchedTimes(): Time[] {
   if (rows === null) {
     throw new Error("rows cannot be gotten from calendar");
   }
+  const today = new Date().getDate();
   return Array.from(rows)
+    .filter((row) => {
+      const dateString = queryTextContent(row, "td:nth-child(1)", "row");
+      const day = Number(dateString.slice(3, 5)); // '07/14(金)' => 14
+      return today >= day;
+    }) // 実行日以前の日付の行が対象。今月のページで実行される前提。
     .filter((row) => queryTextContent(row, "td:nth-child(2)", "row") === "") // 公休などを除外
     .map<[string, string]>((row) => [
       queryTextContent(row, "td:nth-child(4)", "出勤時刻"),
       queryTextContent(row, "td:nth-child(5)", "退勤時刻"),
     ])
-    .filter(
-      ([start, end]) =>
-        (start == "" && end !== "") || (start !== "" && end === "")
-    ) // どちらかは空である
+    .filter(([start, end]) => start === "" || end === "") // リアル欠勤、有給の区別をしない
     .map<Time>(([start, end]) => {
       // 打刻されてない時間の補正
       const startTime = parseTime(start === "" ? "10:30" : start);
