@@ -1,11 +1,5 @@
 import type { WorkingStats } from "./popup-client";
-import {
-  addTime,
-  normalizeTime,
-  parseTime,
-  subtractTime,
-  type Time,
-} from "./time";
+import { addTime, parseTime, subtractTime, type Time } from "./time";
 
 function main(): void {
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -36,8 +30,7 @@ function actualWorkingTime(): Time {
     "tr:nth-child(1) td",
     "実労働時間"
   );
-  const time = parseTime(textContent);
-  return normalizeTime(time);
+  return parseTime(textContent);
 }
 
 function fixedWorkingTime(): Time {

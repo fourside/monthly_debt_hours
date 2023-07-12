@@ -19,10 +19,10 @@ export function App() {
 function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
   const stats = wrapper.getData();
   const restTime = subtractTime(stats.fixedTime, stats.actualTime);
-  const restDays = Math.floor(stats.fixedTime.hour / 8) - stats.actualDays;
+  const restDays = Math.trunc(stats.fixedTime.hour / 8) - stats.actualDays;
   const restMin = restTime.hour * 60 + restTime.minute;
-  const averageHour = Math.floor(restMin / restDays / 60);
-  const averageMin = Math.floor(restMin / restDays) % 60;
+  const averageHour = Math.trunc(restMin / restDays / 60);
+  const averageMin = Math.trunc(restMin / restDays) % 60;
   console.debug({ stats });
   return (
     <div>
