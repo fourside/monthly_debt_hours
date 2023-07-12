@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "lint": "eslint src --ext ts,tsx",
+    "check": "tsc --noEmit && npm run lint && npm t -- run",
     "prepare": "husky install"
   },
   "devDependencies": {
