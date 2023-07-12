@@ -11,12 +11,21 @@ export function getWorkingStats(): Promise<WorkingStats> {
   return asyncRetry(_getWorkingStats);
 }
 
+type PopupMessage = { type: "mount" };
+
 function _getWorkingStats(): Promise<WorkingStats> {
   return new Promise<WorkingStats>((resolve, reject) =>
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     chrome.tabs.query({ currentWindow: true, active: true }, async (tabs) => {
       const tab = tabs[0];
       try {
-        const response = await chrome.tabs.sendMessage(tab.id!, {
+        if (tab.id === undefined) {
+          throw new Error("tab.id is undefined");
+        }
+        const response = await chrome.tabs.sendMessage<
+          PopupMessage,
+          WorkingStats
+        >(tab.id, {
           type: "mount",
         });
         const result = workingStatsSchema.validate(response);

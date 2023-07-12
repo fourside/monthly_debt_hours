@@ -47,7 +47,7 @@ class PromiseWrapper<T> {
       (data) => {
         this.state = { type: "fulfilled", data };
       },
-      (error) => {
+      (error: unknown) => {
         this.state = { type: "failed", error };
       }
     );

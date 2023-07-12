@@ -2,23 +2,21 @@ import type { WorkingStats } from "./popup-client";
 import { addTime, parseTime, subtractTime, type Time } from "./time";
 
 function main(): void {
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message.type === "mount") {
-      const actualTime = actualWorkingTime();
-      const fixedTime = fixedWorkingTime();
-      const actualDays = actualWorkingDays();
-      const missPunched = getMissPunchedTimes();
-      const sumMissPunchedTime = missPunched.reduce<Time>(
-        (acc, cur) => addTime(acc, cur),
-        { hour: 0, minute: 0 }
-      );
-      const response: WorkingStats = {
-        actualTime: addTime(actualTime, sumMissPunchedTime),
-        fixedTime,
-        actualDays: actualDays + missPunched.length,
-      };
-      sendResponse(response);
-    }
+  chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
+    const actualTime = actualWorkingTime();
+    const fixedTime = fixedWorkingTime();
+    const actualDays = actualWorkingDays();
+    const missPunched = getMissPunchedTimes();
+    const sumMissPunchedTime = missPunched.reduce<Time>(
+      (acc, cur) => addTime(acc, cur),
+      { hour: 0, minute: 0 }
+    );
+    const response: WorkingStats = {
+      actualTime: addTime(actualTime, sumMissPunchedTime),
+      fixedTime,
+      actualDays: actualDays + missPunched.length,
+    };
+    sendResponse(response);
     return true;
   });
 }

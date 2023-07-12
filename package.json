@@ -7,14 +7,19 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint src --ext ts,tsx"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.18",
     "@types/chrome": "^0.0.239",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
+    "eslint": "^8.44.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.9",
     "vitest": "^0.33.0"
