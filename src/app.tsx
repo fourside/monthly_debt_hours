@@ -5,9 +5,7 @@ import { getWorkingStats, type WorkingStats } from "./popup-client";
 import { averageTime, subtractTime } from "./time";
 
 export function App() {
-  const [promiseWrapper] = useState(
-    () => new PromiseWrapper(getWorkingStats())
-  );
+  const [promiseWrapper] = useState(() => new PromiseWrapper(getWorkingStats()));
 
   return (
     <Suspense fallback={<div>loading...</div>}>

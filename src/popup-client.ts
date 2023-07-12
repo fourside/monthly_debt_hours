@@ -22,10 +22,7 @@ function _getWorkingStats(): Promise<WorkingStats> {
         if (tab.id === undefined) {
           throw new Error("tab.id is undefined");
         }
-        const response = await chrome.tabs.sendMessage<
-          PopupMessage,
-          WorkingStats
-        >(tab.id, {
+        const response = await chrome.tabs.sendMessage<PopupMessage, WorkingStats>(tab.id, {
           type: "mount",
         });
         const result = workingStatsSchema.validate(response);
@@ -54,10 +51,7 @@ const workingStatsSchema = joi.object<WorkingStats>({
   fixedTime: timeSchema,
 });
 
-async function asyncRetry<T>(
-  callback: () => Promise<T>,
-  attempt = 0
-): Promise<T> {
+async function asyncRetry<T>(callback: () => Promise<T>, attempt = 0): Promise<T> {
   try {
     return await callback();
   } catch (error) {

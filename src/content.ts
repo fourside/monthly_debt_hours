@@ -7,10 +7,7 @@ function main(): void {
     const fixedTime = fixedWorkingTime();
     const actualDays = actualWorkingDays();
     const missPunched = getMissPunchedTimes();
-    const sumMissPunchedTime = missPunched.reduce<Time>(
-      (acc, cur) => addTime(acc, cur),
-      { hour: 0, minute: 0 }
-    );
+    const sumMissPunchedTime = missPunched.reduce<Time>((acc, cur) => addTime(acc, cur), { hour: 0, minute: 0 });
     const response: WorkingStats = {
       actualTime: addTime(actualTime, sumMissPunchedTime),
       fixedTime,
@@ -23,31 +20,19 @@ function main(): void {
 
 function actualWorkingTime(): Time {
   const workingTimeTable = getWorkingTimeTable();
-  const textContent = queryTextContent(
-    workingTimeTable,
-    "tr:nth-child(1) td",
-    "実労働時間"
-  );
+  const textContent = queryTextContent(workingTimeTable, "tr:nth-child(1) td", "実労働時間");
   return parseTime(textContent);
 }
 
 function fixedWorkingTime(): Time {
   const workingTimeTable = getWorkingTimeTable();
-  const textContent = queryTextContent(
-    workingTimeTable,
-    "tr:nth-child(2) td",
-    "月規定労働時間"
-  );
+  const textContent = queryTextContent(workingTimeTable, "tr:nth-child(2) td", "月規定労働時間");
   return parseTime(textContent);
 }
 
 function actualWorkingDays(): number {
   const basisTable = getBasisTable();
-  const textContent = queryTextContent(
-    basisTable,
-    "tr:nth-child(1) td",
-    "実働日数"
-  );
+  const textContent = queryTextContent(basisTable, "tr:nth-child(1) td", "実働日数");
   return Number(textContent);
 }
 
@@ -93,11 +78,7 @@ function getCalendarTable(): HTMLTableElement {
   return table;
 }
 
-function queryTextContent(
-  element: Element,
-  selector: string,
-  label: string
-): string {
+function queryTextContent(element: Element, selector: string, label: string): string {
   const result = element.querySelector(selector)?.textContent;
   if (result === null || result === undefined) {
     throw new Error(`${label} not be there`);
