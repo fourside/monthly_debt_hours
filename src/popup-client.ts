@@ -1,3 +1,4 @@
+import Ajv, { JSONSchemaType } from "ajv";
 import type { Time } from "./time";
 
 export type WorkingStats = {
@@ -10,6 +11,8 @@ export function getWorkingStats(): Promise<WorkingStats> {
   return asyncRetry(_getWorkingStats);
 }
 
+const ajv = new Ajv();
+
 function _getWorkingStats(): Promise<WorkingStats> {
   return new Promise<WorkingStats>((resolve, reject) =>
     chrome.tabs.query({ currentWindow: true, active: true }, async (tabs) => {
@@ -18,6 +21,9 @@ function _getWorkingStats(): Promise<WorkingStats> {
         const response = await chrome.tabs.sendMessage(tab.id!, {
           type: "mount",
         });
+        if (!ajv.validate(workingStatsSchema, response)) {
+          throw new Error("validation error");
+        }
         resolve(response);
       } catch (error) {
         reject(error);
@@ -25,6 +31,27 @@ function _getWorkingStats(): Promise<WorkingStats> {
     })
   );
 }
+
+const timeSchema: JSONSchemaType<Time> = {
+  type: "object",
+  properties: {
+    hour: { type: "integer" },
+    minute: { type: "integer" },
+  },
+  required: ["hour", "minute"],
+  additionalProperties: false,
+};
+
+const workingStatsSchema: JSONSchemaType<WorkingStats> = {
+  type: "object",
+  properties: {
+    actualDays: { type: "integer" },
+    actualTime: timeSchema,
+    fixedTime: timeSchema,
+  },
+  required: ["actualDays", "actualTime", "fixedTime"],
+  additionalProperties: false,
+};
 
 async function asyncRetry<T>(
   callback: () => Promise<T>,
