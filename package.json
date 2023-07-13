@@ -10,10 +10,11 @@
     "test": "vitest",
     "lint": "eslint src --ext ts,tsx",
     "check": "tsc --noEmit && npm run lint && npm t -- run",
-    "prepare": "husky install"
+    "prepare": "husky install && panda codegen"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.18",
+    "@pandacss/dev": "^0.6.0",
     "@types/chrome": "^0.0.239",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
@@ -24,11 +25,11 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^7.0.0",
     "prettier": "^3.0.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.9",
-    "vitest": "^0.33.0",
-    "husky": "^7.0.0"
+    "vitest": "^0.33.0"
   },
   "dependencies": {
     "joi": "^17.9.2",
