@@ -31,5 +31,5 @@ module.exports = {
   rules: {
     "prettier/prettier": "error",
   },
-  ignorePatterns: [".eslintrc.cjs"],
+  ignorePatterns: ["*.cjs"],
 };
