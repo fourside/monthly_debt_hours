@@ -1,3 +1,4 @@
+import { css } from "../styled-system/css";
 import "./style.css";
 
 import { Suspense, useState } from "react";
@@ -8,11 +9,23 @@ export function App() {
   const [promiseWrapper] = useState(() => new PromiseWrapper(getWorkingStats()));
 
   return (
-    <Suspense fallback={<div>loading...</div>}>
-      <Stats wrapper={promiseWrapper} />
-    </Suspense>
+    <main className={container}>
+      <Suspense fallback={<div className={loading}>loading...</div>}>
+        <Stats wrapper={promiseWrapper} />
+      </Suspense>
+    </main>
   );
 }
+
+const container = css({
+  width: "100%",
+  padding: "2rem",
+});
+
+const loading = css({
+  display: "flex",
+  placeItems: "center",
+});
 
 function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
   const stats = wrapper.getData();
