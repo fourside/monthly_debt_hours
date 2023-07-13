@@ -10,6 +10,7 @@
     "test": "vitest",
     "lint": "eslint src --ext ts,tsx",
     "check": "tsc --noEmit && npm run lint && npm t -- run",
+    "analyze": "ANALYZE=true npm run build",
     "prepare": "husky install && panda codegen"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^7.0.0",
     "prettier": "^3.0.0",
+    "rollup-plugin-visualizer": "^5.9.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.9",
     "vitest": "^0.33.0"

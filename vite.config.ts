@@ -1,5 +1,6 @@
 import { crx, defineManifest } from "@crxjs/vite-plugin";
 import react from "@vitejs/plugin-react-swc";
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 import packageJson from "./package.json";
 
@@ -25,5 +26,5 @@ const manifest = defineManifest({
 });
 
 export default defineConfig({
-  plugins: [react(), crx({ manifest })],
+  plugins: [react(), crx({ manifest }), process.env.ANALYZE === "true" && visualizer()],
 });
