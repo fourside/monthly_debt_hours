@@ -1,0 +1,33 @@
+name: cd
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: Setup dependencies
+        run: npm ci
+
+      - name: Check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Create release
+        run: |
+          (cd ./dist && zip -r ../monthly_debt_hours.zip .)
+          gh release create ${{ github.ref }} ./monthly_debt_hours.zip
