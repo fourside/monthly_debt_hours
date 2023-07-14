@@ -34,6 +34,7 @@ function _getWorkingStats(): Promise<WorkingStats> {
         }
         resolve(result.value);
       } catch (error) {
+        console.error(error);
         reject(error);
       }
     })
@@ -56,12 +57,12 @@ async function asyncRetry<T>(callback: () => Promise<T>, attempt = 0): Promise<T
     return await callback();
   } catch (error) {
     if (error instanceof Error) {
-      if (attempt >= 10) {
+      if (attempt >= 5) {
         console.error("retry over 10 times.");
         throw error;
       }
       await delay();
-      return await asyncRetry(callback, attempt++);
+      return await asyncRetry(callback, ++attempt);
     }
     throw error;
   }

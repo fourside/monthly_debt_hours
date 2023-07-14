@@ -1,7 +1,7 @@
 import { css } from "../styled-system/css";
 import "./style.css";
 
-import { Suspense, useState } from "react";
+import { Component, ErrorInfo, ReactNode, Suspense, useState } from "react";
 import { getWorkingStats, type WorkingStats } from "./popup-client";
 import { Time, averageTime, subtractTime } from "./time";
 
@@ -10,9 +10,11 @@ export function App() {
 
   return (
     <main className={container}>
-      <Suspense fallback={<div className={loading}>loading...</div>}>
-        <Stats wrapper={promiseWrapper} />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className={loading}>loading...</div>}>
+          <Stats wrapper={promiseWrapper} />
+        </Suspense>
+      </ErrorBoundary>
     </main>
   );
 }
@@ -56,6 +58,48 @@ function TimeComponent({ time }: { time: Time }) {
       {String(time.hour).padStart(2, "0")}:{String(time.minute).padStart(2, "0")}
     </span>
   );
+}
+
+type ErrorBoundaryProps = {
+  children?: ReactNode;
+};
+
+type ErrorBoundaryState =
+  | {
+      hasError: false;
+    }
+  | {
+      hasError: true;
+      error: Error;
+    };
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(error);
+    console.error(info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div>
+          <h1>Error</h1>
+          <div>{this.state.error.message}</div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 class PromiseWrapper<T> {
