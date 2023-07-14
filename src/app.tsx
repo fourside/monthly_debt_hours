@@ -3,7 +3,7 @@ import "./style.css";
 
 import { Suspense, useState } from "react";
 import { getWorkingStats, type WorkingStats } from "./popup-client";
-import { averageTime, subtractTime } from "./time";
+import { Time, averageTime, subtractTime } from "./time";
 
 export function App() {
   const [promiseWrapper] = useState(() => new PromiseWrapper(getWorkingStats()));
@@ -32,17 +32,29 @@ function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
   const restTime = subtractTime(stats.fixedTime, stats.actualTime);
   const restDays = Math.trunc(stats.fixedTime.hour / 8) - stats.actualDays;
   const avgTime = averageTime(restTime, restDays);
+  const debt = subtractTime({ hour: restDays * 8, minute: 0 }, restTime);
 
   console.debug({ stats });
   return (
     <div>
       <div>
-        rest: {restDays} day ({restTime.hour}:{restTime.minute})
+        rest: {restDays} day (<TimeComponent time={restTime} />)
       </div>
       <div>
-        average: {avgTime.hour}:{avgTime.minute}
+        average: <TimeComponent time={avgTime} />
+      </div>
+      <div>
+        debt: <TimeComponent time={debt} />
       </div>
     </div>
+  );
+}
+
+function TimeComponent({ time }: { time: Time }) {
+  return (
+    <span>
+      {String(time.hour).padStart(2, "0")}:{String(time.minute).padStart(2, "0")}
+    </span>
   );
 }
 

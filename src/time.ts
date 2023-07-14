@@ -36,8 +36,15 @@ export function averageTime(restTime: Time, restDays: number): Time {
 }
 
 function normalizeTime(time: Time): Time {
-  return {
+  const normalized: Time = {
     hour: time.hour + Math.trunc(time.minute / 60),
     minute: time.minute % 60,
+  };
+  if (normalized.minute >= 0) {
+    return normalized;
+  }
+  return {
+    hour: normalized.hour - 1,
+    minute: normalized.minute + 60,
   };
 }

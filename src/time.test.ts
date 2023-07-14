@@ -30,7 +30,7 @@ describe(addTime.name, () => {
     // act
     const result = addTime(a, b);
     // assert
-    expect(result).toStrictEqual<Time>({ hour: 10, minute: -15 });
+    expect(result).toStrictEqual<Time>({ hour: 9, minute: 45 });
   });
 });
 
@@ -52,6 +52,6 @@ describe(subtractTime.name, () => {
     // act
     const result = subtractTime(a, b);
     // assert
-    expect(result).toStrictEqual<Time>({ hour: -3, minute: -34 });
+    expect(result).toStrictEqual<Time>({ hour: -4, minute: 26 });
   });
 });
