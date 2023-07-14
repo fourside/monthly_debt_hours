@@ -2,10 +2,14 @@ import { css } from "../styled-system/css";
 import "./style.css";
 
 import { Component, ErrorInfo, ReactNode, Suspense, useState } from "react";
-import { getWorkingStats, type WorkingStats } from "./popup-client";
+import { type WorkingStats } from "./popup-client";
 import { Time, averageTime, subtractTime } from "./time";
 
-export function App() {
+type Props = {
+  getWorkingStats: () => Promise<WorkingStats>;
+};
+
+export function App({ getWorkingStats }: Props) {
   const [promiseWrapper] = useState(() => new PromiseWrapper(getWorkingStats()));
 
   return (
@@ -39,25 +43,17 @@ function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
   console.debug({ stats });
   return (
     <div>
+      <div>debt: {formatTime(debt)}</div>
+      <div>average: {formatTime(avgTime)}</div>
       <div>
-        debt: <TimeComponent time={debt} />
-      </div>
-      <div>
-        average: <TimeComponent time={avgTime} />
-      </div>
-      <div>
-        rest: <TimeComponent time={restTime} /> ... {restDays} day
+        rest: {formatTime(restTime)} ... {restDays} day
       </div>
     </div>
   );
 }
 
-function TimeComponent({ time }: { time: Time }) {
-  return (
-    <span>
-      {String(time.hour).padStart(2, "0")}:{String(time.minute).padStart(2, "0")}
-    </span>
-  );
+function formatTime(time: Time): string {
+  return `${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}`;
 }
 
 type ErrorBoundaryProps = {
