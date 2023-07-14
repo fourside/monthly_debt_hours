@@ -40,13 +40,13 @@ function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
   return (
     <div>
       <div>
-        rest: {restDays} day (<TimeComponent time={restTime} />)
+        debt: <TimeComponent time={debt} />
       </div>
       <div>
         average: <TimeComponent time={avgTime} />
       </div>
       <div>
-        debt: <TimeComponent time={debt} />
+        rest: <TimeComponent time={restTime} /> ... {restDays} day
       </div>
     </div>
   );
