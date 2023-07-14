@@ -1,4 +1,4 @@
-import joi from "joi";
+import { workingStatsSchema } from "./schema";
 import type { Time } from "./time";
 
 export type WorkingStats = {
@@ -40,17 +40,6 @@ function _getWorkingStats(): Promise<WorkingStats> {
     })
   );
 }
-
-const timeSchema = joi.object<Time>({
-  hour: joi.number(),
-  minute: joi.number(),
-});
-
-const workingStatsSchema = joi.object<WorkingStats>({
-  actualDays: joi.number(),
-  actualTime: timeSchema,
-  fixedTime: timeSchema,
-});
 
 async function asyncRetry<T>(callback: () => Promise<T>, attempt = 0): Promise<T> {
   try {
