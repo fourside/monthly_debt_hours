@@ -31,3 +31,5 @@ jobs:
         run: |
           (cd ./dist && zip -r ../monthly_debt_hours.zip .)
           gh release create ${{ github.ref }} ./monthly_debt_hours.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
