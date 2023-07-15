@@ -23,17 +23,15 @@
   }
 }
 
-@layer utilities {
-  @keyframes loading-char {
-    0% {
-      transform: translateY(0px);
-    }
-    40% {
-      transform: translateY(-40px);
-    }
-    80%,
-    100% {
-      transform: translateY(0px);
-    }
+@keyframes loading-char {
+  0% {
+    transform: translateY(0px);
+  }
+  20% {
+    transform: translateY(-8px);
+  }
+  60%,
+  100% {
+    transform: translateY(0px);
   }
 }

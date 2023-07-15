@@ -1,4 +1,4 @@
-import { css, cx } from "../styled-system/css";
+import { css } from "../styled-system/css";
 import "../styled-system/global.css";
 import "./style.css";
 
@@ -35,11 +35,11 @@ const container = css({
 function Loading() {
   return (
     <div className={loading}>
-      <div>
+      <div className={loadingInner}>
         {"loading...".split("").map((char, i) => (
-          <span key={i} className={cx(loadingChar, css({ animationDelay: `${(i + 1) / 10}s` }))}>
+          <div key={i} className={loadingChar} style={{ animationDelay: `${(i + 1) / 10}s` }}>
             {char}
-          </span>
+          </div>
         ))}
       </div>
     </div>
@@ -52,7 +52,11 @@ const loading = css({
   height: "100cqh",
   fontFamily: "monospace",
   fontSize: "xl",
-  color: "gray",
+  color: "gray.400",
+});
+
+const loadingInner = css({
+  display: "flex",
 });
 
 const loadingChar = css({
