@@ -1,4 +1,5 @@
-import { css } from "../styled-system/css";
+import { css, cx } from "../styled-system/css";
+import "../styled-system/global.css";
 import "./style.css";
 
 import { Component, ErrorInfo, ReactNode, Suspense, useState } from "react";
@@ -15,7 +16,7 @@ export function App({ getWorkingStats }: Props) {
   return (
     <main className={container}>
       <ErrorBoundary>
-        <Suspense fallback={<div className={loading}>loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <Stats wrapper={promiseWrapper} />
         </Suspense>
       </ErrorBoundary>
@@ -25,12 +26,39 @@ export function App({ getWorkingStats }: Props) {
 
 const container = css({
   width: "100%",
-  padding: "2rem",
+  padding: "1rem",
+  minHeight: "120px",
+  minWidth: "320px",
+  containerType: "size",
 });
 
+function Loading() {
+  return (
+    <div className={loading}>
+      <div>
+        {"loading...".split("").map((char, i) => (
+          <span key={i} className={cx(loadingChar, css({ animationDelay: `${(i + 1) / 10}s` }))}>
+            {char}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const loading = css({
-  display: "flex",
+  display: "grid",
   placeItems: "center",
+  height: "100cqh",
+  fontFamily: "monospace",
+  fontSize: "xl",
+  color: "gray",
+});
+
+const loadingChar = css({
+  animationName: "loading-char",
+  animationIterationCount: "infinite",
+  animationDuration: "2s",
 });
 
 function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
@@ -42,15 +70,54 @@ function Stats({ wrapper }: { wrapper: PromiseWrapper<WorkingStats> }) {
 
   console.debug({ stats });
   return (
-    <div>
-      <div>debt: {formatTime(debt)}</div>
-      <div>average: {formatTime(avgTime)}</div>
-      <div>
-        rest: {formatTime(restTime)} ... {restDays} day
+    <div className={statsContainer}>
+      <div className={statsMain}>
+        <div className={statsRow}>
+          <span className={statsLabel}>debt:</span>
+          <span className={statsValue}>{formatTime(debt)}</span>
+        </div>
+      </div>
+      <div className={statsSub}>
+        <div className={statsRow}>
+          <span className={statsLabel}>average:</span>
+          <span className={statsValue}>{formatTime(avgTime)}</span>
+        </div>
+        <div className={statsRow}>
+          <span className={statsLabel}>rest:</span>
+          <span className={statsValue}>
+            {formatTime(restTime)} ... {restDays} day
+          </span>
+        </div>
       </div>
     </div>
   );
 }
+
+const statsContainer = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+});
+
+const statsMain = css({
+  fontSize: "2xl",
+});
+
+const statsSub = css({
+  color: "gray",
+  fontSize: "sm",
+});
+
+const statsRow = css({
+  display: "grid",
+  grid: "auto / 80px 1fr",
+});
+
+const statsLabel = css({
+  fontWeight: "bold",
+});
+
+const statsValue = css({});
 
 function formatTime(time: Time): string {
   return `${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}`;
@@ -88,8 +155,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       return (
         <div>
-          <h1>Error</h1>
-          <div>{this.state.error.message}</div>
+          <h1 className={errorHeading}>Error</h1>
+          <div className={errorMessage}>{this.state.error.message}</div>
         </div>
       );
     }
@@ -97,6 +164,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     return this.props.children;
   }
 }
+
+const errorHeading = css({
+  fontSize: "2xl",
+});
+
+const errorMessage = css({
+  color: "red.500",
+});
 
 class PromiseWrapper<T> {
   private state:

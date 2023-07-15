@@ -16,21 +16,24 @@
   -webkit-text-size-adjust: 100%;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
   }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+}
+
+@layer utilities {
+  @keyframes loading-char {
+    0% {
+      transform: translateY(0px);
+    }
+    40% {
+      transform: translateY(-40px);
+    }
+    80%,
+    100% {
+      transform: translateY(0px);
+    }
   }
 }
