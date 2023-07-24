@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { addTime, parseTime, subtractTime, type Time } from "./time";
+import { addTime, greaterThanOrEqual, parseTime, subtractTime, type Time } from "./time";
 
 describe(parseTime.name, () => {
   test("parse time string", () => {
@@ -53,5 +53,37 @@ describe(subtractTime.name, () => {
     const result = subtractTime(a, b);
     // assert
     expect(result).toStrictEqual<Time>({ hour: -4, minute: 26 });
+  });
+});
+
+describe(greaterThanOrEqual.name, () => {
+  test("12:40 is greater than 9:50", () => {
+    // arrange
+    const a: Time = { hour: 12, minute: 40 };
+    const b: Time = { hour: 9, minute: 50 };
+    // act
+    const result = greaterThanOrEqual(a, b);
+    // assert
+    expect(result).toBe(true);
+  });
+
+  test("8:15 is NOT greater than 23:03", () => {
+    // arrange
+    const a: Time = { hour: 8, minute: 15 };
+    const b: Time = { hour: 23, minute: 3 };
+    // act
+    const result = greaterThanOrEqual(a, b);
+    // assert
+    expect(result).toBe(false);
+  });
+
+  test("4:43 is greater than or equal 4:43", () => {
+    // arrange
+    const a: Time = { hour: 4, minute: 43 };
+    const b: Time = { hour: 4, minute: 43 };
+    // act
+    const result = greaterThanOrEqual(a, b);
+    // assert
+    expect(result).toBe(true);
   });
 });

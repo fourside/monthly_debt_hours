@@ -35,6 +35,12 @@ export function averageTime(restTime: Time, restDays: number): Time {
   });
 }
 
+export function greaterThanOrEqual(a: Time, b: Time): boolean {
+  const aMin = a.hour * 60 + a.minute;
+  const bMin = b.hour * 60 + b.minute;
+  return aMin >= bMin;
+}
+
 function normalizeTime(time: Time): Time {
   const normalized: Time = {
     hour: time.hour + Math.trunc(time.minute / 60),

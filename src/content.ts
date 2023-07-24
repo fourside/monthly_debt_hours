@@ -1,5 +1,5 @@
 import type { WorkingStats } from "./popup-client";
-import { addTime, parseTime, subtractTime, type Time } from "./time";
+import { addTime, greaterThanOrEqual, parseTime, subtractTime, type Time } from "./time";
 
 function main(): void {
   chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
@@ -40,12 +40,24 @@ function getPastTimes(): Time[] {
       queryTextContent(row, "td:nth-child(5)", "退勤時刻"),
     ])
     .map<Time>(([start, end]) => {
-      // 打刻されてない時間の補正。欠勤と打刻ミスの区別をしない。自然と有給も8hでカウントされる
-      const startTime = parseTime(start === "" ? "10:30" : start);
-      const endTime = parseTime(end === "" ? "19:30" : end);
+      const [startTime, endTime] = correctWorkingTime(start, end);
       // 昼休憩をマイナス
       return subtractTime(subtractTime(endTime, startTime), { hour: 1, minute: 0 });
     });
+}
+
+const START_TIME: Time = { hour: 10, minute: 30 };
+const END_TIME: Time = { hour: 19, minute: 30 };
+
+function correctWorkingTime(start: string, end: string): [Time, Time] {
+  // 打刻されてない時間の補正。欠勤と打刻ミスの区別をしない。自然と有給も8hでカウントされる
+  const startTime = start === "" ? START_TIME : parseTime(start);
+  const endTime = end === "" ? END_TIME : parseTime(end);
+  if (greaterThanOrEqual(startTime, { hour: 14, minute: 30 }) && end === "") {
+    // 始業がある程度遅いかつ終業がない場合、始業打刻ミスで終業の打刻が始業扱いになっている
+    return [START_TIME, startTime];
+  }
+  return [startTime, endTime];
 }
 
 function getWorkingTimeTable(): HTMLTableElement {
