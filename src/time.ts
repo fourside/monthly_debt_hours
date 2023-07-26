@@ -4,11 +4,19 @@ export type Time = {
 };
 
 export function parseTime(timeStr: string): Time {
+  if (!timeStr.includes(":")) {
+    throw new Error(`not hh:mm format: ${timeStr}`);
+  }
   const [hourStr, minuteStr] = timeStr.split(":");
-  return normalizeTime({
-    hour: Number(hourStr),
-    minute: Number(minuteStr),
-  });
+  const hour = Number(hourStr);
+  if (Number.isNaN(hour)) {
+    throw new Error(`hour is not Number: ${hourStr}`);
+  }
+  const minute = Number(minuteStr);
+  if (Number.isNaN(minute)) {
+    throw new Error(`minute is not Number: ${minuteStr}`);
+  }
+  return normalizeTime({ hour, minute });
 }
 
 export function addTime(from: Time, to: Time): Time {

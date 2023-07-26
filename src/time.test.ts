@@ -10,6 +10,27 @@ describe(parseTime.name, () => {
     // assert
     expect(result).toStrictEqual<Time>({ hour: 15, minute: 13 });
   });
+
+  test("parse throws error if not hh:mm string is taken", () => {
+    // arrange
+    const timeStr = "string";
+    // act & assert
+    expect(() => parseTime(timeStr)).toThrowError();
+  });
+
+  test("parse throws error if hour is not number", () => {
+    // arrange
+    const timeStr = "abc:34";
+    // act & assert
+    expect(() => parseTime(timeStr)).toThrowError();
+  });
+
+  test("parse throws error if minute is not number", () => {
+    // arrange
+    const timeStr = "12:abc";
+    // act & assert
+    expect(() => parseTime(timeStr)).toThrowError();
+  });
 });
 
 describe(addTime.name, () => {
