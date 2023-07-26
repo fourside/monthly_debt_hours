@@ -27,4 +27,7 @@ const manifest = defineManifest({
 
 export default defineConfig({
   plugins: [react(), crx({ manifest }), process.env.ANALYZE === "true" && visualizer()],
+  build: {
+    sourcemap: true,
+  },
 });

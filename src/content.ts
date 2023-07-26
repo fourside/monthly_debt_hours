@@ -30,26 +30,28 @@ function getPastTimes(): Time[] {
   const today = new Date().getDate();
   return Array.from(rows)
     .filter((row) => {
+      // 実行日以前の日付の行が対象。今月のページで実行される前提。
       const dateString = queryTextContent(row, "td:nth-child(1)", "row");
       const day = Number(dateString.slice(3, 5)); // '07/14(金)' => 14
       return today > day;
-    }) // 実行日以前の日付の行が対象。今月のページで実行される前提。
+    })
     .filter((row) => queryTextContent(row, "td:nth-child(2)", "row") === "") // 公休などを除外
-    .map<[string, string]>((row) => [
+    .map<[string, string, string]>((row) => [
       queryTextContent(row, "td:nth-child(4)", "出勤時刻"),
       queryTextContent(row, "td:nth-child(5)", "退勤時刻"),
+      queryTextContent(row, "td:nth-child(10)", "休憩時間"),
     ])
-    .map<Time>(([start, end]) => {
-      const [startTime, endTime] = correctWorkingTime(start, end);
-      // 昼休憩をマイナス
-      return subtractTime(subtractTime(endTime, startTime), { hour: 1, minute: 0 });
+    .map<Time>(([start, end, rest]) => {
+      const [startTime, endTime] = parseWorkingTime(start, end);
+      const restTime = rest === "" ? { hour: 1, minute: 0 } : parseTime(rest);
+      return subtractTime(subtractTime(endTime, startTime), restTime);
     });
 }
 
 const START_TIME: Time = { hour: 10, minute: 30 };
 const END_TIME: Time = { hour: 19, minute: 30 };
 
-function correctWorkingTime(start: string, end: string): [Time, Time] {
+function parseWorkingTime(start: string, end: string): [Time, Time] {
   // 打刻されてない時間の補正。欠勤と打刻ミスの区別をしない。自然と有給も8hでカウントされる
   const startTime = start === "" ? START_TIME : parseTime(start);
   const endTime = end === "" ? END_TIME : parseTime(end);
