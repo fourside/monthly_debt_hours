@@ -36,15 +36,25 @@ function getPastTimes(): Time[] {
       return today > day;
     })
     .filter((row) => queryTextContent(row, "td:nth-child(2)", "row") === "") // 公休などを除外
-    .map<[string, string, string]>((row) => [
+    .map<[string, string, string, string]>((row) => [
       queryTextContent(row, "td:nth-child(4)", "出勤時刻"),
       queryTextContent(row, "td:nth-child(5)", "退勤時刻"),
       queryTextContent(row, "td:nth-child(10)", "休憩時間"),
+      queryTextContent(row, "td:nth-child(1)", "日付"),
     ])
-    .map<Time>(([start, end, rest]) => {
+    .map<Time>(([start, end, rest, date]) => {
       const [startTime, endTime] = parseWorkingTime(start, end);
       const restTime = rest === "" ? { hour: 1, minute: 0 } : parseTime(rest);
-      return subtractTime(subtractTime(endTime, startTime), restTime);
+      const result = subtractTime(subtractTime(endTime, startTime), restTime);
+      console.log({
+        [date]: {
+          start,
+          end,
+          rest,
+          result,
+        },
+      });
+      return result;
     });
 }
 
